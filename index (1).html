@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Roast & Ritual — Specialty Coffee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --espresso:#1C0A00;
+  --mahogany:#3B1A0A;
+  --walnut:#6B3A2A;
+  --caramel:#A0522D;
+  --latte:#C8956B;
+  --cream:#FAF3E8;
+  --parchment:#F0E6D3;
+  --milk:#FDF8F2;
+  --gold:#B8860B;
+  --gold2:#D4A843;
+  --text:#2A1408;
+  --muted:#7A5640;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Jost',sans-serif;
+  background:var(--milk);
+  color:var(--text);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* CUSTOM CURSOR */
+.cursor{
+  position:fixed;width:10px;height:10px;
+  background:var(--caramel);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform 0.1s,width 0.3s,height 0.3s,background 0.3s;
+}
+.cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:1px solid rgba(160,82,45,0.4);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform 0.15s ease,width 0.3s,height 0.3s;
+}
+body:hover .cursor{width:10px;height:10px}
+
+/* NOISE TEXTURE OVERLAY */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1000;opacity:0.4;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--parchment)}
+::-webkit-scrollbar-thumb{background:var(--caramel);border-radius:2px}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.4rem 6%;
+  transition:background 0.4s,padding 0.4s;
+}
+nav.scrolled{
+  background:rgba(252,248,242,0.96);
+  backdrop-filter:blur(12px);
+  padding:1rem 6%;
+  border-bottom:1px solid rgba(107,58,42,0.1);
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.6rem;font-weight:300;
+  color:var(--milk);letter-spacing:2px;
+  transition:color 0.4s;
+}
+nav.scrolled .logo{color:var(--espresso)}
+.logo span{font-style:italic;color:var(--gold2)}
+
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{
+  font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(253,248,242,0.75);text-decoration:none;
+  transition:color 0.3s;font-weight:400;
+}
+nav.scrolled .nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--gold2)}
+nav.scrolled .nav-links a:hover{color:var(--caramel)}
+
+.nav-cta{
+  font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;
+  padding:0.6rem 1.5rem;border:1px solid rgba(212,168,67,0.6);
+  color:var(--gold2);background:transparent;cursor:none;
+  transition:all 0.3s;font-family:'Jost',sans-serif;font-weight:400;
+}
+.nav-cta:hover{background:var(--gold2);color:var(--espresso);border-color:var(--gold2)}
+nav.scrolled .nav-cta{border-color:var(--caramel);color:var(--caramel)}
+nav.scrolled .nav-cta:hover{background:var(--caramel);color:#fff}
+
+/* HAMBURGER */
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:none;background:none;border:none;padding:4px}
+.hamburger span{display:block;width:24px;height:1.5px;background:var(--milk);transition:all 0.3s}
+nav.scrolled .hamburger span{background:var(--espresso)}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  background:var(--espresso);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1600&q=85') center/cover no-repeat;
+  opacity:0.22;
+  transform:scale(1.05);
+  animation:slowZoom 20s ease-in-out infinite alternate;
+}
+@keyframes slowZoom{from{transform:scale(1.05)}to{transform:scale(1.12)}}
+
+.hero-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(28,10,0,0.92) 0%,rgba(28,10,0,0.6) 50%,rgba(59,26,10,0.85) 100%);
+}
+
+/* DECORATIVE CIRCLE */
+.hero-circle{
+  position:absolute;right:-8%;top:50%;transform:translateY(-50%);
+  width:600px;height:600px;border-radius:50%;
+  border:1px solid rgba(212,168,67,0.08);
+}
+.hero-circle::before{
+  content:'';position:absolute;inset:40px;border-radius:50%;
+  border:1px solid rgba(212,168,67,0.12);
+}
+.hero-circle::after{
+  content:'';position:absolute;inset:100px;border-radius:50%;
+  border:1px solid rgba(212,168,67,0.18);
+}
+
+.hero-content{
+  position:relative;z-index:2;
+  padding:10rem 6% 6rem;
+  max-width:700px;
+}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:1rem;
+  margin-bottom:2rem;
+  font-size:0.72rem;letter-spacing:4px;text-transform:uppercase;
+  color:var(--gold2);font-weight:400;
+}
+.hero-eyebrow::before{content:'';width:40px;height:1px;background:var(--gold2)}
+
+.hero h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3.5rem,7vw,6rem);
+  font-weight:300;line-height:1.05;
+  color:var(--milk);margin-bottom:1.8rem;
+  letter-spacing:-0.5px;
+}
+.hero h1 em{font-style:italic;color:var(--gold2)}
+.hero h1 .line2{display:block;padding-left:3rem}
+
+.hero-sub{
+  font-size:1rem;line-height:1.9;
+  color:rgba(250,243,232,0.6);
+  max-width:420px;margin-bottom:3rem;
+  font-weight:300;
+}
+
+.hero-actions{display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+.btn-gold{
+  display:inline-block;
+  background:var(--gold2);color:var(--espresso);
+  padding:1rem 2.5rem;font-size:0.78rem;
+  letter-spacing:2px;text-transform:uppercase;
+  text-decoration:none;font-weight:500;
+  transition:all 0.3s;border:none;cursor:none;
+  font-family:'Jost',sans-serif;
+}
+.btn-gold:hover{background:var(--gold);transform:translateY(-2px)}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:0.8rem;
+  font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(250,243,232,0.6);text-decoration:none;
+  transition:color 0.3s;cursor:none;
+}
+.btn-ghost::after{content:'→';transition:transform 0.3s}
+.btn-ghost:hover{color:var(--gold2)}
+.btn-ghost:hover::after{transform:translateX(4px)}
+
+.hero-scroll{
+  position:absolute;bottom:2.5rem;left:6%;
+  display:flex;align-items:center;gap:1rem;z-index:2;
+  font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(250,243,232,0.35);
+}
+.scroll-line{width:50px;height:1px;background:rgba(250,243,232,0.2);position:relative;overflow:hidden}
+.scroll-line::after{
+  content:'';position:absolute;left:-100%;top:0;
+  width:100%;height:100%;background:var(--gold2);
+  animation:scrollAnim 2s ease-in-out infinite;
+}
+@keyframes scrollAnim{to{left:100%}}
+
+/* ── MARQUEE STRIP ── */
+.marquee-strip{
+  background:var(--gold2);padding:0.9rem 0;
+  overflow:hidden;white-space:nowrap;
+}
+.marquee-inner{
+  display:inline-flex;animation:marquee 25s linear infinite;
+}
+.marquee-inner span{
+  font-size:0.72rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--espresso);font-weight:500;padding:0 2.5rem;
+}
+.marquee-inner .dot{color:rgba(28,10,0,0.4)}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── SECTION COMMONS ── */
+.section-tag{
+  font-size:0.68rem;letter-spacing:4px;text-transform:uppercase;
+  color:var(--caramel);margin-bottom:1rem;
+  display:flex;align-items:center;gap:1rem;
+}
+.section-tag::before{content:'';width:30px;height:1px;background:var(--caramel)}
+.section-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.2rem,4vw,3.2rem);
+  font-weight:300;line-height:1.2;color:var(--espresso);
+}
+.section-title em{font-style:italic;color:var(--caramel)}
+
+/* ── ABOUT ── */
+.about{
+  padding:8rem 6%;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:6rem;align-items:center;
+  background:var(--milk);
+}
+.about-media{position:relative}
+.about-img-main{
+  width:100%;aspect-ratio:4/5;object-fit:cover;
+  display:block;
+}
+.about-img-accent{
+  position:absolute;bottom:-2.5rem;right:-2.5rem;
+  width:55%;aspect-ratio:1;object-fit:cover;
+  border:6px solid var(--milk);
+}
+.about-badge{
+  position:absolute;top:2rem;left:-2rem;
+  background:var(--espresso);color:var(--gold2);
+  width:110px;height:110px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;
+}
+.about-badge-num{font-size:2rem;font-weight:300;line-height:1}
+.about-badge-text{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;margin-top:2px;text-align:center}
+
+.about-content .section-title{margin-bottom:1.5rem}
+.about-content p{
+  font-size:0.95rem;line-height:1.9;color:var(--muted);
+  margin-bottom:1.2rem;font-weight:300;
+}
+.about-stats{
+  display:flex;gap:2.5rem;margin:2.5rem 0;
+  padding:2rem 0;border-top:1px solid var(--parchment);
+  border-bottom:1px solid var(--parchment);
+}
+.stat-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.8rem;font-weight:300;color:var(--caramel);line-height:1;
+}
+.stat-label{font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+/* ── MENU ── */
+.menu{background:var(--parchment);padding:8rem 6%}
+.menu-header{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  margin-bottom:4rem;flex-wrap:wrap;gap:2rem;
+}
+.menu-tabs{display:flex;gap:0}
+.menu-tab{
+  padding:0.6rem 1.5rem;font-size:0.72rem;letter-spacing:2px;
+  text-transform:uppercase;background:none;border:1px solid rgba(107,58,42,0.25);
+  color:var(--muted);cursor:none;font-family:'Jost',sans-serif;
+  margin-left:-1px;transition:all 0.25s;
+}
+.menu-tab.active,.menu-tab:hover{
+  background:var(--espresso);color:var(--gold2);border-color:var(--espresso);z-index:1;
+}
+
+.menu-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:1.5px;background:rgba(107,58,42,0.1);
+}
+.menu-item{
+  background:var(--milk);padding:2rem 2.2rem;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:1rem;transition:background 0.25s;
+}
+.menu-item:hover{background:var(--cream)}
+.menu-item-left{}
+.menu-item-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.2rem;font-weight:400;color:var(--espresso);
+  margin-bottom:0.4rem;
+}
+.menu-item-desc{font-size:0.82rem;color:var(--muted);line-height:1.6;font-weight:300}
+.menu-item-tag{
+  display:inline-block;margin-top:0.6rem;
+  font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;
+  color:var(--caramel);border:1px solid rgba(160,82,45,0.3);
+  padding:0.2rem 0.6rem;
+}
+.menu-price{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.4rem;font-weight:300;color:var(--caramel);
+  white-space:nowrap;flex-shrink:0;
+}
+
+/* ── GALLERY ── */
+.gallery{padding:8rem 6% 4rem;background:var(--milk)}
+.gallery-header{margin-bottom:3rem}
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  grid-template-rows:260px 260px;
+  gap:8px;
+}
+.g1{grid-column:span 5;grid-row:span 2}
+.g2{grid-column:span 4}
+.g3{grid-column:span 3}
+.g4{grid-column:span 3}
+.g5{grid-column:span 4}
+
+.gallery-item{overflow:hidden;position:relative}
+.gallery-item img{
+  width:100%;height:100%;object-fit:cover;
+  display:block;transition:transform 0.6s ease;
+  filter:saturate(0.85);
+}
+.gallery-item:hover img{transform:scale(1.06);filter:saturate(1)}
+.gallery-item::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(28,10,0,0.3) 0%,transparent 60%);
+  opacity:0;transition:opacity 0.4s;
+}
+.gallery-item:hover::after{opacity:1}
+
+/* ── EXPERIENCE SECTION ── */
+.experience{
+  background:var(--espresso);
+  padding:8rem 6%;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:6rem;align-items:center;
+}
+.exp-content .section-tag{color:var(--gold2)}
+.exp-content .section-tag::before{background:var(--gold2)}
+.exp-content .section-title{color:var(--milk)}
+.exp-content .section-title em{color:var(--gold2)}
+.exp-content p{color:rgba(250,243,232,0.55);line-height:1.9;margin:1.5rem 0 2.5rem;font-weight:300}
+.features{display:flex;flex-direction:column;gap:1.5rem}
+.feature{display:flex;align-items:flex-start;gap:1.2rem}
+.feature-icon{
+  width:42px;height:42px;flex-shrink:0;
+  border:1px solid rgba(212,168,67,0.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;color:var(--gold2);
+}
+.feature-text h4{font-size:0.88rem;font-weight:500;color:var(--milk);margin-bottom:0.3rem;letter-spacing:0.5px}
+.feature-text p{font-size:0.82rem;color:rgba(250,243,232,0.45);line-height:1.6}
+
+.exp-visual{position:relative;padding:2rem}
+.exp-img{
+  width:100%;aspect-ratio:3/4;object-fit:cover;
+  display:block;filter:sepia(0.15) saturate(0.9);
+}
+.exp-quote{
+  position:absolute;bottom:-1rem;left:-1rem;right:2rem;
+  background:var(--gold2);padding:2rem;
+}
+.exp-quote p{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.1rem;font-style:italic;font-weight:300;
+  color:var(--espresso);line-height:1.6;
+}
+.exp-quote cite{
+  display:block;margin-top:0.8rem;
+  font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(28,10,0,0.6);font-style:normal;
+}
+
+/* ── CONTACT ── */
+.contact{background:var(--parchment);padding:8rem 6%}
+.contact-grid{
+  display:grid;grid-template-columns:1fr 1.4fr;
+  gap:6rem;margin-top:4rem;align-items:start;
+}
+.contact-info h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.8rem;font-weight:300;color:var(--espresso);
+  margin-bottom:1.5rem;
+}
+.info-block{margin-bottom:1.8rem}
+.info-label{
+  font-size:0.68rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--caramel);margin-bottom:0.4rem;
+}
+.info-value{font-size:0.92rem;color:var(--muted);line-height:1.7;font-weight:300}
+
+.hours-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:0.3rem 1.5rem;margin-top:0.5rem;
+}
+.hours-row{
+  display:flex;justify-content:space-between;
+  font-size:0.85rem;color:var(--muted);padding:0.4rem 0;
+  border-bottom:1px solid rgba(107,58,42,0.1);
+}
+.hours-day{font-weight:400;color:var(--text)}
+
+/* FORM */
+.contact-form{background:var(--milk);padding:3rem}
+.form-group{margin-bottom:1.5rem}
+.form-group label{
+  display:block;font-size:0.68rem;letter-spacing:3px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;
+}
+.form-group input,
+.form-group textarea,
+.form-group select{
+  width:100%;background:var(--parchment);
+  border:1px solid rgba(107,58,42,0.15);
+  color:var(--text);padding:0.9rem 1.1rem;
+  font-family:'Jost',sans-serif;font-size:0.9rem;font-weight:300;
+  outline:none;transition:border-color 0.3s;
+  appearance:none;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus{border-color:var(--caramel)}
+.form-group textarea{height:120px;resize:none}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.btn-submit{
+  width:100%;background:var(--espresso);color:var(--gold2);
+  padding:1.1rem;font-family:'Jost',sans-serif;
+  font-size:0.78rem;letter-spacing:3px;text-transform:uppercase;
+  border:none;cursor:none;transition:all 0.3s;font-weight:400;
+}
+.btn-submit:hover{background:var(--mahogany)}
+.form-success{
+  display:none;text-align:center;padding:2rem;
+  color:var(--caramel);font-family:'Cormorant Garamond',serif;
+  font-size:1.3rem;font-style:italic;
+}
+
+/* ── WHATSAPP FLOAT ── */
+.wa-float{
+  position:fixed;bottom:2rem;right:2rem;z-index:400;
+  display:flex;align-items:center;gap:0.8rem;
+  background:#25D366;color:#fff;
+  padding:0.8rem 1.4rem;
+  box-shadow:0 8px 30px rgba(37,211,102,0.35);
+  text-decoration:none;font-size:0.78rem;
+  letter-spacing:1px;text-transform:uppercase;font-weight:500;
+  transition:all 0.3s;cursor:none;
+}
+.wa-float:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(37,211,102,0.45)}
+.wa-icon{font-size:1.2rem}
+.wa-pulse{
+  position:absolute;top:-4px;right:-4px;
+  width:12px;height:12px;background:#fff;border-radius:50%;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:0.5}}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--espresso);
+  padding:5rem 6% 2rem;
+}
+.footer-top{
+  display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;
+  gap:4rem;padding-bottom:4rem;
+  border-bottom:1px solid rgba(250,243,232,0.08);
+}
+.footer-brand .logo{color:var(--milk);font-size:1.8rem;display:block;margin-bottom:1rem}
+.footer-brand p{font-size:0.82rem;color:rgba(250,243,232,0.3);line-height:1.8;font-weight:300;max-width:220px}
+.footer-col h4{
+  font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold2);margin-bottom:1.5rem;
+}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:0.7rem}
+.footer-col ul li a{
+  font-size:0.82rem;color:rgba(250,243,232,0.3);
+  text-decoration:none;transition:color 0.25s;font-weight:300;
+}
+.footer-col ul li a:hover{color:var(--gold2)}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:2rem;flex-wrap:wrap;gap:1rem;
+}
+.footer-bottom p{font-size:0.75rem;color:rgba(250,243,232,0.2);font-weight:300}
+.footer-socials{display:flex;gap:1.5rem}
+.footer-socials a{
+  font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(250,243,232,0.25);text-decoration:none;transition:color 0.25s;
+}
+.footer-socials a:hover{color:var(--gold2)}
+
+/* ── MOBILE ── */
+@media(max-width:900px){
+  nav{padding:1.2rem 5%}
+  .nav-links,.nav-cta{display:none}
+  .hamburger{display:flex}
+  .mobile-menu{
+    display:none;position:fixed;inset:0;
+    background:var(--espresso);z-index:400;
+    flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;
+  }
+  .mobile-menu.open{display:flex}
+  .mobile-menu a{
+    font-family:'Cormorant Garamond',serif;
+    font-size:2.5rem;font-weight:300;color:var(--milk);
+    text-decoration:none;letter-spacing:2px;
+  }
+  .mobile-menu a:hover{color:var(--gold2)}
+  .mobile-close{
+    position:absolute;top:1.5rem;right:5%;
+    background:none;border:none;font-size:1.5rem;
+    color:var(--milk);cursor:none;
+  }
+
+  .about{grid-template-columns:1fr;gap:3rem;padding:5rem 5%}
+  .about-img-accent{right:0;bottom:-1.5rem;width:45%}
+  .about-badge{left:0}
+  .about-stats{gap:1.5rem}
+  
+  .menu{padding:5rem 5%}
+  .menu-header{flex-direction:column;align-items:flex-start}
+  .menu-tabs{flex-wrap:wrap}
+  
+  .gallery{padding:5rem 5% 2rem}
+  .gallery-grid{
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:200px 200px 200px;
+  }
+  .g1{grid-column:span 2;grid-row:span 1}
+  .g2{grid-column:span 1}
+  .g3{grid-column:span 1}
+  .g4{grid-column:span 1}
+  .g5{grid-column:span 1}
+  
+  .experience{grid-template-columns:1fr;gap:3rem;padding:5rem 5%}
+  .exp-visual{padding:0;margin-top:1rem}
+  .exp-quote{position:relative;bottom:auto;left:auto;right:auto;margin-top:0}
+  
+  .contact{padding:5rem 5%}
+  .contact-grid{grid-template-columns:1fr;gap:3rem}
+  .contact-form{padding:2rem}
+  .form-row{grid-template-columns:1fr}
+  
+  footer{padding:4rem 5% 2rem}
+  .footer-top{grid-template-columns:1fr 1fr;gap:2.5rem}
+  
+  .hero h1{font-size:clamp(2.8rem,10vw,4rem)}
+  .hero-circle{display:none}
+  
+  body{cursor:auto}
+  .cursor,.cursor-ring{display:none}
+  .nav-cta,.btn-gold,.btn-ghost,.btn-submit,.wa-float,
+  .menu-tab,.nav-links a,.footer-socials a,.footer-col ul li a,
+  .hamburger,.mobile-close{cursor:auto}
+}
+@media(max-width:480px){
+  .footer-top{grid-template-columns:1fr}
+  .about-badge{display:none}
+  .about-img-accent{display:none}
+  .gallery-grid{grid-template-columns:1fr}
+  .g1,.g2,.g3,.g4,.g5{grid-column:span 1}
+  .hero-actions{flex-direction:column;align-items:flex-start;gap:1.5rem}
+  .wa-float .wa-text{display:none}
+  .wa-float{padding:1rem}
+}
+
+/* ANIMATIONS */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.8s ease,transform 0.8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}
+.reveal-delay-2{transition-delay:0.2s}
+.reveal-delay-3{transition-delay:0.3s}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="#about" onclick="closeMobile()">About</a>
+  <a href="#menu" onclick="closeMobile()">Menu</a>
+  <a href="#gallery" onclick="closeMobile()">Gallery</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo">Roast <span>&</span> Ritual</div>
+  <ul class="nav-links">
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#contact">Visit Us</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Reserve</button>
+  <button class="hamburger" id="hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-circle"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Specialty Coffee — Est. 2019</div>
+    <h1>Where Coffee<br><span class="line2">Becomes <em>Ritual</em></span></h1>
+    <p class="hero-sub">Carefully sourced single-origin beans, roasted in small batches. Every cup is a moment of intentional pleasure.</p>
+    <div class="hero-actions">
+      <a href="#menu" class="btn-gold">Explore the Menu</a>
+      <a href="#about" class="btn-ghost">Our Story</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span>Single Origin Beans</span><span class="dot">✦</span>
+    <span>Cold Brew</span><span class="dot">✦</span>
+    <span>Artisan Pastries</span><span class="dot">✦</span>
+    <span>Pour Over</span><span class="dot">✦</span>
+    <span>Specialty Espresso</span><span class="dot">✦</span>
+    <span>Seasonal Drinks</span><span class="dot">✦</span>
+    <span>Fresh Roasted Daily</span><span class="dot">✦</span>
+    <span>Single Origin Beans</span><span class="dot">✦</span>
+    <span>Cold Brew</span><span class="dot">✦</span>
+    <span>Artisan Pastries</span><span class="dot">✦</span>
+    <span>Pour Over</span><span class="dot">✦</span>
+    <span>Specialty Espresso</span><span class="dot">✦</span>
+    <span>Seasonal Drinks</span><span class="dot">✦</span>
+    <span>Fresh Roasted Daily</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-media reveal">
+    <img class="about-img-main" src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=700&q=80" alt="Barista crafting coffee"/>
+    <img class="about-img-accent" src="https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400&q=80" alt="Coffee beans"/>
+    <div class="about-badge">
+      <div class="about-badge-num">5★</div>
+      <div class="about-badge-text">Rated</div>
+    </div>
+  </div>
+  <div class="about-content">
+    <div class="section-tag reveal">Our Story</div>
+    <h2 class="section-title reveal reveal-delay-1">Coffee is more than<br>a drink — it's a <em>craft</em></h2>
+    <p class="reveal reveal-delay-2">Roast & Ritual began with a single obsession: what does a truly perfect cup of coffee taste like? We travelled across Ethiopia, Colombia, and Coorg to find out. What we brought back was not just beans — it was a philosophy.</p>
+    <p class="reveal reveal-delay-2">Every batch we roast, every pour we make, carries that original question. Our baristas are trained not just in technique, but in patience — because the best coffee cannot be rushed.</p>
+    <div class="about-stats reveal reveal-delay-3">
+      <div>
+        <div class="stat-num">12</div>
+        <div class="stat-label">Origins Sourced</div>
+      </div>
+      <div>
+        <div class="stat-num">40+</div>
+        <div class="stat-label">Menu Items</div>
+      </div>
+      <div>
+        <div class="stat-num">5yr</div>
+        <div class="stat-label">In Business</div>
+      </div>
+    </div>
+    <a href="#menu" class="btn-gold reveal reveal-delay-3">See Our Menu</a>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="menu" id="menu">
+  <div class="menu-header">
+    <div>
+      <div class="section-tag reveal">What We Serve</div>
+      <h2 class="section-title reveal reveal-delay-1">Crafted with <em>intention</em></h2>
+    </div>
+    <div class="menu-tabs reveal">
+      <button class="menu-tab active" onclick="switchTab(this,'espresso')">Espresso</button>
+      <button class="menu-tab" onclick="switchTab(this,'cold')">Cold Brew</button>
+      <button class="menu-tab" onclick="switchTab(this,'food')">Food</button>
+    </div>
+  </div>
+
+  <div class="menu-grid" id="menuGrid">
+    <!-- items injected by JS -->
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery" id="gallery">
+  <div class="gallery-header">
+    <div class="section-tag reveal">Inside the Ritual</div>
+    <h2 class="section-title reveal reveal-delay-1">Atmosphere you can <em>feel</em></h2>
+  </div>
+  <div class="gallery-grid reveal">
+    <div class="gallery-item g1">
+      <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=700&q=80" alt="Cafe interior"/>
+    </div>
+    <div class="gallery-item g2">
+      <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80" alt="Latte art"/>
+    </div>
+    <div class="gallery-item g3">
+      <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=500&q=80" alt="Coffee beans"/>
+    </div>
+    <div class="gallery-item g4">
+      <img src="https://images.unsplash.com/photo-1521302200778-33500795e128?w=500&q=80" alt="Barista"/>
+    </div>
+    <div class="gallery-item g5">
+      <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=600&q=80" alt="Coffee shop"/>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="experience">
+  <div class="exp-content">
+    <div class="section-tag reveal">The Experience</div>
+    <h2 class="section-title reveal reveal-delay-1">More than a cafe.<br>A <em>sanctuary</em>.</h2>
+    <p class="reveal reveal-delay-1">We designed every corner of Roast & Ritual to help you slow down. Warm lighting, curated music, and a team that knows your order by your third visit.</p>
+    <div class="features reveal reveal-delay-2">
+      <div class="feature">
+        <div class="feature-icon">☕</div>
+        <div class="feature-text">
+          <h4>Fresh Roasted Daily</h4>
+          <p>Our beans are roasted on-site every morning. You taste the difference.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌿</div>
+        <div class="feature-text">
+          <h4>Sustainably Sourced</h4>
+          <p>Direct trade relationships with farms across three continents.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎵</div>
+        <div class="feature-text">
+          <h4>Curated Ambiance</h4>
+          <p>Handpicked playlists, warm lighting, and spaces designed for focus or conversation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="exp-visual reveal reveal-delay-2">
+    <img class="exp-img" src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=600&q=80" alt="Coffee preparation"/>
+    <div class="exp-quote">
+      <p>"The best coffee I've had outside of Italy. This place understands that a cup of coffee is a conversation with yourself."</p>
+      <cite>— Meera Krishnan, Food Writer</cite>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-tag reveal">Find Us</div>
+  <h2 class="section-title reveal reveal-delay-1">Come in for a <em>cup</em></h2>
+  <div class="contact-grid">
+    <div class="contact-info reveal">
+      <h3>We'd love to see you.</h3>
+      <div class="info-block">
+        <div class="info-label">Address</div>
+        <div class="info-value">12 Khader Nawaz Khan Road<br>Nungambakkam, Chennai 600 006</div>
+      </div>
+      <div class="info-block">
+        <div class="info-label">Phone & Email</div>
+        <div class="info-value">+91 98400 56789<br>hello@roastandritual.in</div>
+      </div>
+      <div class="info-block">
+        <div class="info-label">Hours</div>
+        <div class="hours-grid">
+          <div class="hours-row"><span class="hours-day">Mon – Fri</span><span>7:30 – 10pm</span></div>
+          <div class="hours-row"><span class="hours-day">Saturday</span><span>8am – 11pm</span></div>
+          <div class="hours-row"><span class="hours-day">Sunday</span><span>9am – 9pm</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-2">
+      <form class="contact-form" id="contactForm" action="https://formspree.io/f/mvzllkoe" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" name="name" placeholder="First & last name" required/>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="you@email.com" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="subject">What's it about?</label>
+          <select id="subject" name="subject">
+            <option value="">Select a reason</option>
+            <option>Table Reservation</option>
+            <option>Corporate Order</option>
+            <option>Private Event</option>
+            <option>Feedback</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Your Message</label>
+          <textarea id="message" name="message" placeholder="Tell us anything…" required></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Send Message →</button>
+        <div class="form-success" id="formSuccess">Thank you — we'll be in touch soon.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="logo">Roast <span>&</span> Ritual</span>
+      <p>Specialty coffee, sourced with care and served with intention. Chennai's home for serious coffee lovers.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Menu</h4>
+      <ul>
+        <li><a href="#menu">Espresso Drinks</a></li>
+        <li><a href="#menu">Cold Brew</a></li>
+        <li><a href="#menu">Pour Over</a></li>
+        <li><a href="#menu">Pastries & Food</a></li>
+        <li><a href="#menu">Seasonal Specials</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Visit</h4>
+      <ul>
+        <li><a href="#about">Our Story</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#contact">Location</a></li>
+        <li><a href="#contact">Events</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Follow</h4>
+      <ul>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Facebook</a></li>
+        <li><a href="#">Zomato</a></li>
+        <li><a href="#">Google Maps</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 Roast & Ritual. All rights reserved.</p>
+    <div class="footer-socials">
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+      <a href="#">Zomato</a>
+    </div>
+  </div>
+</footer>
+
+<!-- WHATSAPP BUTTON -->
+<a href="https://wa.me/919840056789?text=Hi%2C%20I%20would%20like%20to%20place%20an%20order%20from%20Roast%20%26%20Ritual!" class="wa-float" target="_blank" rel="noopener">
+  <div class="wa-pulse"></div>
+  <span class="wa-icon">💬</span>
+  <span class="wa-text">Order on WhatsApp</span>
+</a>
+
+<script>
+// CURSOR
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+if(cursor&&ring){
+  document.addEventListener('mousemove',e=>{
+    cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';
+    setTimeout(()=>{ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px'},80);
+  });
+  document.querySelectorAll('a,button').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cursor.style.width='18px';cursor.style.height='18px';ring.style.width='50px';ring.style.height='50px'});
+    el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='36px';ring.style.height='36px'});
+  });
+}
+
+// NAV SCROLL
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>60)});
+
+// MOBILE MENU CLOSE
+function closeMobile(){document.getElementById('mobileMenu').classList.remove('open')}
+document.getElementById('mobileClose').addEventListener('click',closeMobile);
+
+// MENU DATA
+const menuData={
+  espresso:[
+    {name:'Signature Espresso',desc:'Double shot, medium roast, clean finish',price:'₹180',tag:'House Favourite'},
+    {name:'Flat White',desc:'Ristretto shots with silky steamed whole milk',price:'₹220',tag:'Bestseller'},
+    {name:'Cortado',desc:'Equal parts espresso and warm milk, no foam',price:'₹200',tag:''},
+    {name:'Oat Milk Latte',desc:'Our house blend with barista oat milk',price:'₹260',tag:'Vegan'},
+    {name:'Cappuccino',desc:'Classic Italian ratio, velvet microfoam',price:'₹210',tag:''},
+    {name:'Gibraltar',desc:'Layered espresso and milk in a rocks glass',price:'₹230',tag:'New'},
+  ],
+  cold:[
+    {name:'Classic Cold Brew',desc:'18-hour steep, smooth and low-acid',price:'₹250',tag:'Bestseller'},
+    {name:'Salted Caramel Cold Brew',desc:'House cold brew, caramel, Himalayan salt',price:'₹290',tag:''},
+    {name:'Cold Brew Tonic',desc:'Cold brew over sparkling tonic, citrus notes',price:'₹280',tag:'Seasonal'},
+    {name:'Iced Ethiopian Pour Over',desc:'Bright, floral, served over clear ice',price:'₹320',tag:'Single Origin'},
+    {name:'Vietnamese Iced Coffee',desc:'Strong drip coffee, sweetened condensed milk',price:'₹240',tag:''},
+    {name:'Coconut Cold Latte',desc:'Cold brew, coconut milk, vanilla',price:'₹270',tag:'Vegan'},
+  ],
+  food:[
+    {name:'Almond Croissant',desc:'Twice-baked with house almond cream',price:'₹180',tag:'Freshly Baked'},
+    {name:'Avocado Toast',desc:'Sourdough, smashed avocado, chilli flakes, egg',price:'₹320',tag:''},
+    {name:'Banana Walnut Loaf',desc:'Moist, not too sweet, made fresh daily',price:'₹140',tag:'Vegan Option'},
+    {name:'Shakshuka',desc:'Tomato-pepper base, two eggs, grilled bread',price:'₹360',tag:'Weekend Special'},
+    {name:'Granola Bowl',desc:'House granola, Greek yoghurt, seasonal fruit',price:'₹280',tag:''},
+    {name:'Grilled Cheese Sandwich',desc:'Three cheese blend on sourdough',price:'₹240',tag:''},
+  ]
+};
+
+let currentTab='espresso';
+function renderMenu(tab){
+  const grid=document.getElementById('menuGrid');
+  grid.innerHTML=menuData[tab].map(item=>`
+    <div class="menu-item">
+      <div class="menu-item-left">
+        <div class="menu-item-name">${item.name}</div>
+        <div class="menu-item-desc">${item.desc}</div>
+        ${item.tag?`<div class="menu-item-tag">${item.tag}</div>`:''}
+      </div>
+      <div class="menu-price">${item.price}</div>
+    </div>
+  `).join('');
+}
+function switchTab(btn,tab){
+  document.querySelectorAll('.menu-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');currentTab=tab;renderMenu(tab);
+}
+renderMenu('espresso');
+
+// SCROLL REVEAL
+const revealEls=document.querySelectorAll('.reveal');
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}});
+},{threshold:0.12});
+revealEls.forEach(el=>io.observe(el));
+
+// FORM SUBMIT
+document.getElementById('contactForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=this.querySelector('.btn-submit');
+  btn.textContent='Sending…';btn.disabled=true;
+  try{
+    const res=await fetch(this.action,{method:'POST',body:new FormData(this),headers:{Accept:'application/json'}});
+    if(res.ok){
+      this.reset();
+      document.getElementById('formSuccess').style.display='block';
+      btn.style.display='none';
+    } else {btn.textContent='Try again';btn.disabled=false}
+  } catch{btn.textContent='Error — try again';btn.disabled=false}
+});
+</script>
+</body>
+</html>
